@@ -113,8 +113,13 @@ class ClassifyImages(QWidget):
         self.fixedImageHeight = self.image.height()
 
 
-app = QApplication([])
+if __name__ == "__main__":
 
-exe = ClassifyImages("predefinedClasses.txt", "trainingData", "manualClassifications_ag.csv")
+    if len(sys.argv) == 1:
+        print("usage: DataClassifier.py <list of classes> <Directory of images> <output CSV name>")
+        sys.exit(1)
+    app = QApplication([])
 
-app.exec_()
+    exe = ClassifyImages(sys.argv[1], sys.argv[2], sys.argv[3])
+
+    app.exec_()
