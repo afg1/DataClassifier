@@ -57,6 +57,10 @@ class ClassifyImages(QWidget):
 
     def finishedClick(self):
         self.fileAcess.close()
+        self.fileAcess = open(self.outpath, 'wt')
+        for fname in self.classifications.keys():
+            self.fileAccess.write("{},  {}\n".format(fname, self.classifications[fname]))
+        self.fileAccess.close()
         sys.exit()
 
     def prevImageClick(self):
