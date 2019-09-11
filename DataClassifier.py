@@ -120,7 +120,7 @@ class ClassifyImages(QWidget):
 if __name__ == "__main__":
 
     if len(sys.argv) == 1:
-        print("usage: DataClassifier.py <list of classes> <Directory of images> <output CSV name>")
+        print("usage: DataClassifier.py <Directory of list of classes> <Directory of images> <output CSV name>")
         sys.exit(1)
     app = QApplication([])
 
