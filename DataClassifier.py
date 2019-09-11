@@ -24,7 +24,7 @@ class ClassifyImages(QWidget):
         self.classButtons = []
         self.initUI()
 
-        self.fileAcess = open(self.outpath, 'at')
+        self.fileAccess = open(self.outpath, 'at')
         self.classifications = {}
 
     def classButtonCallbackFactory(self, index):
@@ -45,8 +45,8 @@ class ClassifyImages(QWidget):
             if btn.isChecked():
                 thisImageClass = i
 
-        self.fileAcess.write("{}, {}\n".format(self.currentImagePath, thisImageClass))
-        self.fileAcess.flush()
+        self.fileAccess.write("{}, {}\n".format(self.currentImagePath, thisImageClass))
+        self.fileAccess.flush()
         self.classifications[self.currentImagePath] = thisImageClass
 
         self.currentIndex += 1
@@ -56,8 +56,8 @@ class ClassifyImages(QWidget):
 
 
     def finishedClick(self):
-        self.fileAcess.close()
-        self.fileAcess = open(self.outpath, 'wt')
+        self.fileAccess.close()
+        self.fileAccess = open(self.outpath, 'wt')
         for fname in self.classifications.keys():
             self.fileAccess.write("{},  {}\n".format(fname, self.classifications[fname]))
         self.fileAccess.close()
@@ -120,7 +120,7 @@ class ClassifyImages(QWidget):
 if __name__ == "__main__":
 
     if len(sys.argv) == 1:
-        print("usage: DataClassifier.py <list of classes> <Directory of images> <output CSV name>")
+        print("usage: DataClassifier.py <Directory of list of classes> <Directory of images> <output CSV name>")
         sys.exit(1)
     app = QApplication([])
 
