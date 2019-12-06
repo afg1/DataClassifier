@@ -18,14 +18,29 @@ class ClassifyImages(QWidget):
         self.outpath = outputfile
 
         self.availableImages = os.listdir(self.indir)
-        self.currentImagePath = self.availableImages[0]
-        self.currentIndex = 0
+        
+        self.currentIndex = -1
 
         self.classButtons = []
-        self.initUI()
+        
 
-        self.fileAccess = open(self.outpath, 'at')
         self.classifications = {}
+        if os.path.exists(self.outpath):
+          self.fileAccess = open(self.outpath, 'r')
+          # self.fileAccess.seek(0)
+          for line in self.fileAccess:
+            print(line.strip())
+            if line.split(',')[1].strip() != "None":
+              print("adding...")
+              self.classifications[line.split(',')[0]] = line.split(',')[1].strip()
+              self.currentIndex += 1
+          self.fileAccess.close()
+          self.fileAccess = open(self.outpath, "a+")
+        else:
+          self.fileAccess = open(self.outpath, 'at')
+
+        self.currentImagePath = self.availableImages[self.currentIndex]
+        self.initUI()
 
     def classButtonCallbackFactory(self, index):
         def classificationClick():
@@ -50,6 +65,7 @@ class ClassifyImages(QWidget):
         self.classifications[self.currentImagePath] = thisImageClass
 
         self.currentIndex += 1
+        self.currentIndex = min(len(self.availableImages) - 1, self.currentIndex)
         self.currentImagePath = self.availableImages[self.currentIndex]
         [a.setChecked(False) for a in self.classButtons]
         self.draw()
@@ -65,6 +81,7 @@ class ClassifyImages(QWidget):
 
     def prevImageClick(self):
         self.currentIndex -= 1
+        self.currentIndex = max(0, self.currentIndex)
         self.currentImagePath = self.availableImages[self.currentIndex]
         thisImageClass = self.classifications[self.currentImagePath]
         [a.setChecked(False) for a in self.classButtons]
@@ -73,8 +90,9 @@ class ClassifyImages(QWidget):
 
     def draw(self):
         self.cur_pixmap = QPixmap(os.path.join(self.indir, self.currentImagePath))
-        self.cur_pixmap = self.cur_pixmap.scaled(self.fixedImageWidth, self.fixedImageHeight)
+        # self.cur_pixmap = self.cur_pixmap.scaled(self.fixedImageWidth, self.fixedImageHeight)
         self.image.setPixmap(self.cur_pixmap)
+        self.imgName.setText(self.currentImagePath)
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -86,8 +104,9 @@ class ClassifyImages(QWidget):
         self.setLayout(self.layout)
         for i, classification in enumerate(self.classes):
             self.classButtons.append(QPushButton(classification))
-            self.layout.addWidget(self.classButtons[-1], i, 0, 1, 1)
+            self.layout.addWidget(self.classButtons[-1], i, 0, 2, 1)
             self.classButtons[-1].clicked.connect(self.classButtonCallbackFactory(i))
+            self.classButtons[-1].clicked.connect(self.nextImageClick)
             self.classButtons[-1].setCheckable(True)
 
         prevBtn = QPushButton("Previous")
@@ -103,14 +122,17 @@ class ClassifyImages(QWidget):
         self.layout.addWidget(nextBtn, self.nclass , 3)
 
         
+        self.imgName = QLabel(self)
+        self.layout.addWidget(self.imgName, 0,1,1,1)
+        self.imgName.setText(self.currentImagePath)
 
         self.image = QLabel(self)
-        self.layout.addWidget(self.image, 0, 1, self.nclass, self.nclass)
+        self.layout.addWidget(self.image, 0, 2, 2, 2)
         self.layout.setVerticalSpacing(0)
         self.show()
 
         self.cur_pixmap = QPixmap(os.path.join(self.indir, self.currentImagePath))
-        self.cur_pixmap = self.cur_pixmap.scaled(self.image.width(), self.image.height())
+        # self.cur_pixmap = self.cur_pixmap.scaled(self.image.width(), self.image.height())
         self.image.setPixmap(self.cur_pixmap)
 
         self.fixedImageWidth = self.image.width()
